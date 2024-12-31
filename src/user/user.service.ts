@@ -42,4 +42,17 @@ export class UserService {
     }
     return user;
   }
+
+  async updateProfileImage(
+    userId: string,
+    imageFileName: string,
+  ): Promise<User> {
+    const user = await this.findOneById(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    user.profileImage = imageFileName;
+    return this.userRepository.save(user);
+  }
 }
