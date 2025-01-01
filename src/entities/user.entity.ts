@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Region } from './region.entity';
 
 @Entity('users')
 export class User {
@@ -20,11 +23,18 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: false })
-  isAdmin: boolean;
+  @Column({ nullable: true })
+  description: string;
+
+  @ManyToOne(() => Region, (region) => region.users)
+  @JoinColumn()
+  region: Region;
 
   @Column({ nullable: true })
   profileImage: string;
+
+  @Column({ default: false })
+  isAdmin: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

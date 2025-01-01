@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
@@ -10,9 +9,8 @@ import {
   BadRequestException,
   Request,
 } from '@nestjs/common';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -38,11 +36,6 @@ export class UserController {
   @Get('id/:id')
   findById(@Param('id') id: string): Promise<User> {
     return this.userService.findOneById(id);
-  }
-
-  @Post('new')
-  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
   }
 
   @Post('profile-image')
