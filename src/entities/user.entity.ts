@@ -33,6 +33,24 @@ export class User {
   @Column({ nullable: true })
   profileImage: string;
 
+  @Column({ default: 500 })
+  vie: number;
+
+  @Column({ default: 50 })
+  defense: number;
+
+  @Column({ default: 70 })
+  attaque: number;
+
+  @Column({ default: 70 })
+  puissance: number;
+
+  @Column({ default: 70 })
+  esquive: number;
+
+  @Column({ default: 70 })
+  endurance: number;
+
   @Column({ default: false })
   isAdmin: boolean;
 

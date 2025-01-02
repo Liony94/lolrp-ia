@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Patch,
+  Body,
   Param,
   Post,
   UploadedFile,
@@ -26,13 +28,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('username/:username')
   findByName(@Param('username') username: string): Promise<User> {
     return this.userService.findOneByName(username);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('id/:id')
   findById(@Param('id') id: string): Promise<User> {
     return this.userService.findOneById(id);
@@ -79,5 +79,21 @@ export class UserController {
     console.log('User ID:', req.user.id);
 
     return this.userService.updateProfileImage(req.user.id, file.filename);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@Request() req): Promise<User> {
+    return this.userService.getCurrentUser(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update-stats')
+  async updateStats(
+    @Request() req,
+    @Body() updateData: Partial<User>,
+  ): Promise<User> {
+    const userId = req.user.id;
+    return this.userService.updateUserStats(userId, updateData);
   }
 }
