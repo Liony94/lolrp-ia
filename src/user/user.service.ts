@@ -67,7 +67,6 @@ export class UserService {
       throw new NotFoundException('Utilisateur non trouvé');
     }
 
-    // Mettre à jour uniquement les stats autorisées
     const allowedStats = [
       'vie',
       'defense',
@@ -82,6 +81,29 @@ export class UserService {
       }
     }
 
+    return this.userRepository.save(user);
+  }
+
+  async updateAvailablePoints(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    user.availablePoints = updateData.availablePoints;
+    return this.userRepository.save(user);
+  }
+
+  async updateLevel(userId: string, updateData: Partial<User>): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    user.level = updateData.level;
     return this.userRepository.save(user);
   }
 }

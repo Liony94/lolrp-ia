@@ -6,11 +6,17 @@ export class Region {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column()
   description: string;
+
+  @Column({ default: '' })
+  imageUrl: string;
+
+  @Column({ type: 'simple-array', nullable: true })
+  champions: string[];
 
   @OneToMany(() => User, (user) => user.region)
   users: User[];

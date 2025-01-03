@@ -22,7 +22,6 @@ import { extname } from 'path';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Promise<User[]> {
     return this.userService.findAll();
@@ -95,5 +94,25 @@ export class UserController {
   ): Promise<User> {
     const userId = req.user.id;
     return this.userService.updateUserStats(userId, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update-level')
+  async updateLevel(
+    @Request() req,
+    @Body() updateData: Partial<User>,
+  ): Promise<User> {
+    const userId = req.user.id;
+    return this.userService.updateLevel(userId, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update-available-points')
+  async updateAvailablePoints(
+    @Request() req,
+    @Body() updateData: Partial<User>,
+  ): Promise<User> {
+    const userId = req.user.id;
+    return this.userService.updateAvailablePoints(userId, updateData);
   }
 }

@@ -6,13 +6,21 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Region } from './region.entity';
+import { Combat } from './combat.entity';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => Combat, (combat) => combat.user)
+  combats: Combat[];
+
+  @OneToMany(() => Combat, (combat) => combat.opponent)
+  combatsAsOpponent: Combat[];
 
   @Column({ unique: true })
   email: string;
@@ -33,6 +41,12 @@ export class User {
   @Column({ nullable: true })
   profileImage: string;
 
+  @Column({ default: 1 })
+  level: number;
+
+  @Column({ nullable: true })
+  availablePoints: number;
+
   @Column({ default: 500 })
   vie: number;
 
@@ -45,11 +59,17 @@ export class User {
   @Column({ default: 70 })
   puissance: number;
 
-  @Column({ default: 70 })
-  esquive: number;
+  @Column({ default: 30 })
+  criticalDmg: number;
 
-  @Column({ default: 70 })
-  endurance: number;
+  @Column({ default: 5 })
+  criticalChance: number;
+
+  @Column({ default: 5 })
+  precision: number;
+
+  @Column({ default: 15 })
+  esquive: number;
 
   @Column({ default: false })
   isAdmin: boolean;
