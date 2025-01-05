@@ -44,6 +44,12 @@ export class User {
   @Column({ default: 1 })
   level: number;
 
+  @Column({ default: 0 })
+  victories: number;
+
+  @Column({ default: 0 })
+  defeats: number;
+
   @Column({ nullable: true })
   availablePoints: number;
 
@@ -79,4 +85,24 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  getBattlePower(): number {
+    return Math.floor(
+      this.vie * 1.5 + // La vie compte pour 150%
+        this.defense * 1.0 +
+        this.attaque * 1.2 +
+        this.puissance * 1.2 +
+        this.criticalDmg * 0.8 +
+        this.criticalChance * 0.8 +
+        this.precision * 0.7 +
+        this.esquive * 0.7,
+    );
+  }
+
+  @Column({ default: 0 })
+  battlePower: number;
+
+  updateBattlePower(): void {
+    this.battlePower = this.getBattlePower();
+  }
 }

@@ -37,6 +37,11 @@ export class UserController {
     return this.userService.findOneById(id);
   }
 
+  @Get('top-user')
+  findTopUser(): Promise<User> {
+    return this.userService.findUserWithMoreVictories();
+  }
+
   @Post('profile-image')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
@@ -114,5 +119,12 @@ export class UserController {
   ): Promise<User> {
     const userId = req.user.id;
     return this.userService.updateAvailablePoints(userId, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('battle-power')
+  async getBattlePower(@Request() req): Promise<{ battlePower: number }> {
+    const battlePower = await this.userService.getBattlePower(req.user.id);
+    return { battlePower };
   }
 }

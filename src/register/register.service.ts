@@ -37,7 +37,16 @@ export class RegisterService {
       ...createUserDto,
       password: hashedPassword,
       region,
+      vie: 500,
+      defense: 50,
+      attaque: 70,
+      puissance: 70,
+      criticalDmg: 30,
+      criticalChance: 5,
+      precision: 5,
+      esquive: 15,
     });
+    user.updateBattlePower();
     return this.userRepository.save(user);
   }
 }

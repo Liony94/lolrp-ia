@@ -22,6 +22,23 @@ export class UserService {
     return user;
   }
 
+  async findUserWithMoreVictories(): Promise<User> {
+    const users = await this.userRepository.find({
+      where: {},
+      order: {
+        victories: 'DESC',
+      },
+      take: 1,
+    });
+
+    const user = users[0];
+    if (!user) {
+      throw new NotFoundException('Aucun utilisateur trouvé');
+    }
+
+    return user;
+  }
+
   async findOneByName(username: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ username });
     if (!user) {
@@ -55,6 +72,9 @@ export class UserService {
       throw new NotFoundException('Utilisateur non trouvé');
     }
 
+    user.updateBattlePower();
+    await this.userRepository.save(user);
+
     return user;
   }
 
@@ -74,12 +94,17 @@ export class UserService {
       'puissance',
       'esquive',
       'endurance',
+      'victories',
+      'defeats',
     ];
+
     for (const [key, value] of Object.entries(updateData)) {
       if (allowedStats.includes(key)) {
         user[key] = value;
       }
     }
+
+    user.updateBattlePower();
 
     return this.userRepository.save(user);
   }
@@ -94,6 +119,7 @@ export class UserService {
     }
 
     user.availablePoints = updateData.availablePoints;
+    user.updateBattlePower();
     return this.userRepository.save(user);
   }
 
@@ -104,6 +130,22 @@ export class UserService {
     }
 
     user.level = updateData.level;
+    user.updateBattlePower();
     return this.userRepository.save(user);
+  }
+
+  async getBattlePower(userId: string): Promise<number> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    user.updateBattlePower();
+    await this.userRepository.save(user);
+
+    return user.battlePower;
   }
 }
