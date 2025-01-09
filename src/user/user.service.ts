@@ -1,151 +1,56 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { UserQueryService } from './services/user-query.service';
+import { UserStatsService } from './services/user-stats.service';
+import { UserProgressionService } from './services/user-progression.service';
+import { UserProfileService } from './services/user-profile.service';
 import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userQueryService: UserQueryService,
+    private readonly userStatsService: UserStatsService,
+    private readonly userProgressionService: UserProgressionService,
+    private readonly userProfileService: UserProfileService,
   ) {}
 
-  findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  findAll() {
+    return this.userQueryService.findAll();
   }
 
-  async findOneById(id: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
-    if (!user) {
-      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
-    }
-    return user;
+  findOneById(id: string) {
+    return this.userQueryService.findOneById(id);
   }
 
-  async findUserWithMoreVictories(): Promise<User> {
-    const users = await this.userRepository.find({
-      where: {},
-      order: {
-        victories: 'DESC',
-      },
-      take: 1,
-    });
-
-    const user = users[0];
-    if (!user) {
-      throw new NotFoundException('Aucun utilisateur trouvé');
-    }
-
-    return user;
+  findOneByName(username: string) {
+    return this.userQueryService.findOneByName(username);
   }
 
-  async findOneByName(username: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ username });
-    if (!user) {
-      throw new NotFoundException(
-        `Utilisateur avec le username ${username} non trouvé`,
-      );
-    }
-    return user;
+  findUserWithMoreVictories() {
+    return this.userQueryService.findUserWithMoreVictories();
   }
 
-  async updateProfileImage(
-    userId: string,
-    imageFileName: string,
-  ): Promise<User> {
-    const user = await this.findOneById(userId);
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    user.profileImage = imageFileName;
-    return this.userRepository.save(user);
+  updateStats(userId: string, updateData: Partial<User>) {
+    return this.userStatsService.updateStats(userId, updateData);
   }
 
-  async getCurrentUser(userId: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['region'],
-    });
-
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    user.updateBattlePower();
-    await this.userRepository.save(user);
-
-    return user;
+  getBattlePower(userId: string) {
+    return this.userStatsService.updateBattlePower(userId);
   }
 
-  async updateUserStats(
-    userId: string,
-    updateData: Partial<User>,
-  ): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    const allowedStats = [
-      'vie',
-      'defense',
-      'attaque',
-      'puissance',
-      'esquive',
-      'endurance',
-      'victories',
-      'defeats',
-    ];
-
-    for (const [key, value] of Object.entries(updateData)) {
-      if (allowedStats.includes(key)) {
-        user[key] = value;
-      }
-    }
-
-    user.updateBattlePower();
-
-    return this.userRepository.save(user);
+  updateLevel(userId: string, updateData: Partial<User>) {
+    return this.userProgressionService.updateLevel(userId, updateData);
   }
 
-  async updateAvailablePoints(
-    userId: string,
-    updateData: Partial<User>,
-  ): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    user.availablePoints = updateData.availablePoints;
-    user.updateBattlePower();
-    return this.userRepository.save(user);
+  updateAvailablePoints(userId: string, points: number) {
+    return this.userProgressionService.updateAvailablePoints(userId, points);
   }
 
-  async updateLevel(userId: string, updateData: Partial<User>): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    user.level = updateData.level;
-    user.updateBattlePower();
-    return this.userRepository.save(user);
+  updateProfileImage(userId: string, imageFileName: string) {
+    return this.userProfileService.updateProfileImage(userId, imageFileName);
   }
 
-  async getBattlePower(userId: string): Promise<number> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    user.updateBattlePower();
-    await this.userRepository.save(user);
-
-    return user.battlePower;
+  getCurrentUser(userId: string) {
+    return this.userProfileService.getCurrentUser(userId);
   }
 }

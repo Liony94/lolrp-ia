@@ -53,6 +53,9 @@ export class User {
   @Column({ nullable: true })
   availablePoints: number;
 
+  @Column({ default: 0 })
+  xp: number;
+
   @Column({ default: 500 })
   vie: number;
 

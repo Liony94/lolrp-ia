@@ -98,7 +98,7 @@ export class UserController {
     @Body() updateData: Partial<User>,
   ): Promise<User> {
     const userId = req.user.id;
-    return this.userService.updateUserStats(userId, updateData);
+    return this.userService.updateStats(userId, updateData);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -118,7 +118,7 @@ export class UserController {
     @Body() updateData: Partial<User>,
   ): Promise<User> {
     const userId = req.user.id;
-    return this.userService.updateAvailablePoints(userId, updateData);
+    return this.userService.updateAvailablePoints(userId, updateData.availablePoints);
   }
 
   @UseGuards(JwtAuthGuard)
