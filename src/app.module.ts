@@ -14,7 +14,10 @@ import { RegisterController } from './register/register.controller';
 import { RegisterService } from './register/register.service';
 import { CombatController } from './combat/combat.controller';
 import { CombatService } from './combat/combat.service';
-
+import { PostModule } from './post/post.module';
+import { Like } from './entities/like.entity';
+import { Tag } from './entities/tag.entity';
+import { Post } from './entities/post.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,12 +32,13 @@ import { CombatService } from './combat/combat.service';
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([User, Region, Combat]),
+    TypeOrmModule.forFeature([User, Region, Combat, Post, Tag, Like]),
     UserModule,
     AuthModule,
     RegisterModule,
     CombatModule,
     RegionModule,
+    PostModule,
   ],
   controllers: [RegisterController, CombatController],
   providers: [RegisterService, CombatService],

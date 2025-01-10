@@ -10,6 +10,8 @@ import {
 } from 'typeorm';
 import { Region } from './region.entity';
 import { Combat } from './combat.entity';
+import { Post } from './post.entity';
+import { Like } from './like.entity';
 
 @Entity('users')
 export class User {
@@ -33,6 +35,9 @@ export class User {
 
   @Column({ nullable: true })
   description: string;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 
   @ManyToOne(() => Region, (region) => region.users)
   @JoinColumn()
@@ -108,4 +113,7 @@ export class User {
   updateBattlePower(): void {
     this.battlePower = this.getBattlePower();
   }
+
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
 }
